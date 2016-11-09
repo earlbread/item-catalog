@@ -16,16 +16,6 @@ class Category(Base):
     name = Column(String(30), unique=True, nullable=False)
 
 
-class SubCategory(Base):
-    __tablename__ = 'sub_category'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(30), unique=True, nullable=False)
-
-    category_id = Column(Integer, ForeignKey('category.id'))
-    category = relationship(Category)
-
-
 class Course(Base):
     __tablename__ = 'course'
 
@@ -38,8 +28,8 @@ class Course(Base):
     description = Column(String(250))
     provider = Column(String(30))
 
-    sub_category_id = Column(Integer, ForeignKey('sub_category.id'))
-    sub_category = relationship(SubCategory)
+    category_id = Column(Integer, ForeignKey('category.id'), nullable=False)
+    category = relationship(Category)
 
 engine = create_engine('sqlite:///catalog.db')
 

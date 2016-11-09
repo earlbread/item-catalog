@@ -1,12 +1,74 @@
 """Server code for item-catalog app
 """
 from flask import Flask
+from flask import redirect, url_for
 
 app = Flask(__name__)
 
 @app.route('/')
-def test():
-    return "Hello?"
+@app.route('/category')
+def index():
+    return redirect(url_for('all_courses'))
+
+@app.route('/category/all/')
+def all_courses():
+    return 'Show courses of all category'
+
+
+@app.route('/category/all/json/')
+def all_courses_json():
+    return 'Show JSON for all courses'
+
+
+@app.route('/category/<int:category_id>/')
+def course_in_category(category_id):
+    return 'Show courses in category'
+
+
+@app.route('/category/<int:category_id>/json/')
+def category_in_category_json(category_id):
+    return 'Show JSON for courses in category'
+
+
+@app.route('/category/new/', methods=['GET', 'POST'])
+def new_category():
+    return 'Create a new category'
+
+
+@app.route('/category/<int:category_id>/edit/',
+           methods=['GET', 'POST'])
+def edit_category(category_id):
+    return 'Edit a category'
+
+
+@app.route('/category/<int:category_id>/delete/',
+           methods=['GET', 'POST'])
+def delete_category(category_id):
+    return 'Delete a category'
+
+
+@app.route('/category/<int:category_id>/course/new/',
+           methods=['GET', 'POST'])
+def new_course(category_id):
+    return 'Create a new course'
+
+
+@app.route('/category/<int:category_id>/course/<int:course_id>/edit/',
+           methods=['GET', 'POST'])
+def edit_course(category_id, course_id):
+    return 'Edit a course'
+
+
+@app.route('/category/<int:category_id>/course/<int:course_id>/delete/',
+           methods=['GET', 'POST'])
+def delete_course(category_id, course_id):
+    return 'Delete a course'
+
+
+@app.route('/category/<int:category_id>/course/<int:course_id>/json/')
+def course_json(category_id, course_id):
+    return 'Show JSON for specific course'
+
 
 if __name__ == '__main__':
     app.debug = True

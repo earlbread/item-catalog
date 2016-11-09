@@ -2,6 +2,20 @@
 """
 from flask import Flask
 from flask import redirect, url_for
+from flask import render_template
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
+
+from database_setup import Base, Category, Course
+
+engine = create_engine('sqlite:///catalog.db')
+
+Base.metadata.bind = engine
+
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
 app = Flask(__name__)
 
@@ -12,7 +26,14 @@ def index():
 
 @app.route('/category/all/')
 def all_courses():
-    return 'Show courses of all category'
+    """Show courses of all category"""
+    categories = session.query(Category).all()
+    courses = session.query(Course).all()
+
+    return render_template('course_list.html',
+                           current_category='all',
+                           categories=categories,
+                           courses=courses)
 
 
 @app.route('/category/all/json/')
@@ -22,7 +43,20 @@ def all_courses_json():
 
 @app.route('/category/<int:category_id>/')
 def course_in_category(category_id):
-    return 'Show courses in category'
+    """Show courses in category"""
+    try:
+        current_category = session.query(Category).filter_by(
+            id=category_id).one()
+    except NoResultFound:
+        return redirect(url_for('all_courses'))
+
+    categories = session.query(Category).all()
+    courses = session.query(Course).filter_by(category_id=category_id).all()
+
+    return render_template('course_list.html',
+                           current_category=current_category.name,
+                           categories=categories,
+                           courses=courses)
 
 
 @app.route('/category/<int:category_id>/json/')

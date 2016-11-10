@@ -33,7 +33,7 @@ def all_courses():
     courses = session.query(Course).all()
 
     return render_template('course_list.html',
-                           current_category='all',
+                           current_category='All',
                            categories=categories,
                            courses=courses)
 
@@ -93,11 +93,19 @@ def edit_category(category_id):
 
 
 @app.route('/category/<int:category_id>/delete/',
-           methods=['POST'])
+           methods=['GET', 'POST'])
 def delete_category(category_id):
     """Delete a category"""
+    try:
+        category = session.query(Category).filter_by(
+            id=category_id).one()
+    except NoResultFound:
+        return redirect(url_for('all_courses'))
+
     if request.method == 'POST':
         return redirect(url_for('all_courses'))
+    else:
+        return render_template('delete_category.html', category=category)
 
 
 @app.route('/category/<int:category_id>/course/new/',
@@ -136,11 +144,23 @@ def edit_course(category_id, course_id):
 
 
 @app.route('/category/<int:category_id>/course/<int:course_id>/delete/',
-           methods=['POST'])
+           methods=['GET', 'POST'])
 def delete_course(category_id, course_id):
     """Delete a course"""
+    try:
+        course = session.query(Course).filter_by(
+            id=course_id).one()
+        category = session.query(Category).filter_by(
+            id=category_id).one()
+    except NoResultFound:
+        return redirect(url_for('all_courses'))
+
     if request.method == 'POST':
         return redirect(url_for('all_courses'))
+    else:
+        return render_template('delete_course.html',
+                               category=category,
+                               course=course)
 
 
 @app.route('/category/<int:category_id>/course/<int:course_id>/json/')

@@ -2,14 +2,40 @@
 {% block content %}
     <div class="category">
       <h1>Category</h1>
+      <p>
+        <a href="{{ url_for('new_category') }}">
+          New Category
+        </a>
+      </p>
       {% for category in categories %}
-      <p>{{ category.name }}</p>
+      <p>
+        {{ category.name }}
+        <a href="{{ url_for('new_course', category_id=category.id) }}">
+          New Course
+        </a>
+        <a href="{{ url_for('edit_category', category_id=category.id) }}">
+          Edit
+        </a>
+        <a href="{{ url_for('delete_category', category_id=category.id) }}">
+          Delete
+        </a>
+      </p>
       {% endfor %}
     </div>
     <div class="courses">
-      <h1>Courses</h1>
+      <h1>{{ current_category }} Courses</h1>
       {% for course in courses %}
-      <p>{{ course.name }}</p>
+      <p>
+        {{ course.name }}
+        <a href="{{ url_for('edit_course', category_id=course.category.id,
+                            course_id=course.id) }}">
+          Edit
+        </a>
+        <a href="{{ url_for('delete_course', category_id=course.category.id,
+                            course_id=course.id) }}">
+          Delete
+        </a>
+      </p>
       {% endfor %}
     </div>
 {% endblock %}

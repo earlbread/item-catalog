@@ -4,6 +4,7 @@ from flask import Flask
 from flask import redirect, url_for
 from flask import render_template
 from flask import request
+from flask import jsonify
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -24,6 +25,7 @@ app.url_map.strict_slashes = False
 @app.route('/')
 @app.route('/category')
 def index():
+    """Redirect to 'all_courses'"""
     return redirect(url_for('all_courses'))
 
 @app.route('/category/all/')
@@ -40,7 +42,10 @@ def all_courses():
 
 @app.route('/category/all/json/')
 def all_courses_json():
-    return 'Show JSON for all courses'
+    """Show JSON for all courses"""
+    courses = session.query(Course).all()
+
+    return jsonify(Course=[course.serialize for course in courses])
 
 
 @app.route('/category/<int:category_id>/')
@@ -62,8 +67,11 @@ def course_in_category(category_id):
 
 
 @app.route('/category/<int:category_id>/json/')
-def category_in_category_json(category_id):
-    return 'Show JSON for courses in category'
+def courses_in_category_json(category_id):
+    """Show JSON for courses in category"""
+    courses = session.query(Course).filter_by(category_id=category_id).all()
+
+    return jsonify(Course=[course.serialize for course in courses])
 
 
 @app.route('/category/new/', methods=['GET', 'POST'])
@@ -218,7 +226,10 @@ def delete_course(category_id, course_id):
 
 @app.route('/category/<int:category_id>/course/<int:course_id>/json/')
 def course_json(category_id, course_id):
-    return 'Show JSON for specific course'
+    """Show JSON for specific course"""
+    course = session.query(Course).filter_by(id=course_id).one()
+
+    return jsonify(Course=course.serialize)
 
 
 if __name__ == '__main__':

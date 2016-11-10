@@ -9,7 +9,9 @@
       </p>
       {% for category in categories %}
       <p>
-        {{ category.name }}
+        <a href="{{ url_for('course_in_category', category_id=category.id) }}">
+          {{ category.name }}
+        </a>
         <a href="{{ url_for('new_course', category_id=category.id) }}">
           New Course
         </a>

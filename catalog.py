@@ -3,6 +3,7 @@
 from flask import Flask
 from flask import redirect, url_for
 from flask import render_template
+from flask import request
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -18,6 +19,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 
 @app.route('/')
 @app.route('/category')
@@ -66,37 +68,79 @@ def category_in_category_json(category_id):
 
 @app.route('/category/new/', methods=['GET', 'POST'])
 def new_category():
-    return 'Create a new category'
+    """Create a new category"""
+    if request.method == 'POST':
+        return redirect(url_for('all_courses'))
+    else:
+        return render_template('new_category.html')
 
 
 @app.route('/category/<int:category_id>/edit/',
            methods=['GET', 'POST'])
 def edit_category(category_id):
-    return 'Edit a category'
+    """Edit a category"""
+    try:
+        category = session.query(Category).filter_by(
+            id=category_id).one()
+    except NoResultFound:
+        return redirect(url_for('all_courses'))
+
+    if request.method == 'POST':
+        return redirect(url_for('all_courses'))
+    else:
+        return render_template('edit_category.html',
+                               category=category)
 
 
 @app.route('/category/<int:category_id>/delete/',
-           methods=['GET', 'POST'])
+           methods=['POST'])
 def delete_category(category_id):
-    return 'Delete a category'
+    """Delete a category"""
+    if request.method == 'POST':
+        return redirect(url_for('all_courses'))
 
 
 @app.route('/category/<int:category_id>/course/new/',
            methods=['GET', 'POST'])
 def new_course(category_id):
-    return 'Create a new course'
+    """Create a new course"""
+    try:
+        category = session.query(Category).filter_by(
+            id=category_id).one()
+    except NoResultFound:
+        return redirect(url_for('all_courses'))
+
+    if request.method == 'POST':
+        return redirect(url_for('all_courses'))
+    else:
+        return render_template('new_course.html',
+                               category=category)
 
 
 @app.route('/category/<int:category_id>/course/<int:course_id>/edit/',
            methods=['GET', 'POST'])
 def edit_course(category_id, course_id):
-    return 'Edit a course'
+    """Edit a course"""
+    try:
+        category = session.query(Category).filter_by(id=category_id).one()
+        course = session.query(Course).filter_by(id=course_id).one()
+    except NoResultFound:
+        return redirect(url_for('all_courses'))
+
+    if request.method == 'POST':
+        return redirect(url_for('all_courses'))
+    else:
+        return render_template('new_course.html',
+                               category=category,
+                               course=course)
 
 
 @app.route('/category/<int:category_id>/course/<int:course_id>/delete/',
-           methods=['GET', 'POST'])
+           methods=['POST'])
 def delete_course(category_id, course_id):
-    return 'Delete a course'
+    """Delete a course"""
+    if request.method == 'POST':
+        return redirect(url_for('all_courses'))
 
 
 @app.route('/category/<int:category_id>/course/<int:course_id>/json/')

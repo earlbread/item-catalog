@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post" action="/category/{{ category.id }}/course/new">
+  <label for="name">Name</label>
+  <input type="text" id="name" name="name">
+  <label for="level">Level</label>
+  <input type="text" id="level" name="level">
+  <label for="url">Url</label>
+  <input type="text" id="url" name="url">
+  <label for="image_url">Image Url</label>
+  <input type="text" id="image_url" name="image_url">
+  <label for="description">Description</label>
+  <input type="text" id="description" name="description">
+  <label for="provider">Provider</label>
+  <input type="text" id="provider" name="provider">
+  <input type="submit">
+</form>
+{% endblock %}

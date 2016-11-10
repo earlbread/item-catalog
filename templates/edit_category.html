@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post" action="/category/{{ category.id }}/edit">
+  <label for="name">Name</label>
+  <input type="text" id="name" name="name" value="{{ category.name }}">
+  <input type="submit">
+</form>
+{% endblock %}

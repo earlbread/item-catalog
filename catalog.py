@@ -67,9 +67,15 @@ def category_in_category_json(category_id):
 
 
 @app.route('/category/new/', methods=['GET', 'POST'])
-def new_category():
+def create_category():
     """Create a new category"""
     if request.method == 'POST':
+        category_name = request.form['name']
+
+        if category_name:
+            new_category = Category(name=category_name)
+            session.add(new_category)
+            session.commit()
         return redirect(url_for('all_courses'))
     else:
         return render_template('new_category.html')
@@ -86,6 +92,12 @@ def edit_category(category_id):
         return redirect(url_for('all_courses'))
 
     if request.method == 'POST':
+        category_name = request.form['name']
+
+        if category_name:
+            category.name = category_name
+            session.add(category)
+            session.commit()
         return redirect(url_for('all_courses'))
     else:
         return render_template('edit_category.html',
@@ -103,6 +115,12 @@ def delete_category(category_id):
         return redirect(url_for('all_courses'))
 
     if request.method == 'POST':
+        courses_in_category = session.query(Course).filter_by(
+            category_id=category.id)
+        courses_in_category.delete()
+        category = session.query(Category).filter_by(id=category_id)
+        category.delete()
+        session.commit()
         return redirect(url_for('all_courses'))
     else:
         return render_template('delete_category.html', category=category)
@@ -110,7 +128,7 @@ def delete_category(category_id):
 
 @app.route('/category/<int:category_id>/course/new/',
            methods=['GET', 'POST'])
-def new_course(category_id):
+def create_course(category_id):
     """Create a new course"""
     try:
         category = session.query(Category).filter_by(
@@ -119,6 +137,25 @@ def new_course(category_id):
         return redirect(url_for('all_courses'))
 
     if request.method == 'POST':
+        course_name = request.form['name']
+
+        if course_name:
+            course_level = request.form['level']
+            course_url = request.form['url']
+            course_image_url = request.form['image_url']
+            course_description = request.form['description']
+            course_provider = request.form['provider']
+
+            new_course = Course(name=course_name,
+                                level=course_level,
+                                url=course_url,
+                                image_url=course_image_url,
+                                description=course_description,
+                                provider=course_provider,
+                                category_id=category_id)
+            session.add(new_course)
+            session.commit()
+
         return redirect(url_for('all_courses'))
     else:
         return render_template('new_course.html',
@@ -136,6 +173,19 @@ def edit_course(category_id, course_id):
         return redirect(url_for('all_courses'))
 
     if request.method == 'POST':
+        course_name = request.form['name']
+
+        if course_name:
+            course.name = course_name
+            course.level = request.form['level']
+            course.url = request.form['url']
+            course.image_url = request.form['image_url']
+            course.description = request.form['description']
+            course.provider = request.form['provider']
+
+            session.add(course)
+            session.commit()
+
         return redirect(url_for('all_courses'))
     else:
         return render_template('edit_course.html',
@@ -156,6 +206,9 @@ def delete_course(category_id, course_id):
         return redirect(url_for('all_courses'))
 
     if request.method == 'POST':
+        course = session.query(Course).filter_by(id=course_id)
+        course.delete()
+        session.commit()
         return redirect(url_for('all_courses'))
     else:
         return render_template('delete_course.html',

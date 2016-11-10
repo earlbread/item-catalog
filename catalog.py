@@ -130,7 +130,7 @@ def edit_course(category_id, course_id):
     if request.method == 'POST':
         return redirect(url_for('all_courses'))
     else:
-        return render_template('new_course.html',
+        return render_template('edit_course.html',
                                category=category,
                                course=course)
 

@@ -3,12 +3,6 @@
     <title>{{ current_category }}</title>
   </head>
   <body>
-    <div class="category">
-      <h1>Category</h1>
-      {% for category in categories %}
-      <p>{{ category.name }}</p>
-      {% endfor %}
-    </div>
     {% block content %}
     {% endblock %}
   </body>

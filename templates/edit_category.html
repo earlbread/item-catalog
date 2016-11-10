@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<h1>Edit Category</h1>
 <form method="post" action="/category/{{ category.id }}/edit">
   <label for="name">Name</label>
-  <input type="text" id="name" name="name" value="{{ category.name }}">
+  <input type="text" id="name" name="name" placeholder="{{ category.name }}">
   <input type="submit">
 </form>
 {% endblock %}

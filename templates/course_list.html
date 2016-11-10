@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
+    <div class="category">
+      <h1>Category</h1>
+      {% for category in categories %}
+      <p>{{ category.name }}</p>
+      {% endfor %}
+    </div>
     <div class="courses">
       <h1>Courses</h1>
       {% for course in courses %}

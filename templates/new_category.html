@@ -1,10 +1,13 @@
-{% extends 'base.html' %}
+{% extends 'category_form.html' %}
 
-{% block content %}
-<h1>New Category</h1>
-<form method="post" action="/category/new">
-  <label for="name">Name</label>
-  <input type="text" id="name" name="name">
-  <input type="submit">
-</form>
+{% block form_title %}
+New Category
+{% endblock %}
+
+{% block action_url %}
+{{ url_for('create_category') }}
+{% endblock %}
+
+{% block form_submit %}
+Create
 {% endblock %}

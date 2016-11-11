@@ -1,32 +1,37 @@
-{% extends 'base.html' %}
+{% extends 'course_form.html' %}
 
-{% block content %}
-<h1>Edit Course</h1>
-<form method="post" action="/category/{{ category.id }}/course/{{ course.id }}/edit">
-  <p>
-    <label for="name">Name</label>
-    <input type="text" id="name" name="name" value="{{ course.name }}">
-  </p>
-  <p>
-    <label for="level">Level</label>
-    <input type="text" id="level" name="level" value="{{ course.level }}">
-  </p>
-  <p>
-    <label for="url">Url</label>
-    <input type="text" id="url" name="url" value="{{ course.url }}">
-  </p>
-  <p>
-    <label for="image_url">Image Url</label>
-    <input type="text" id="image_url" name="image_url" value="{{ course.image_url }}">
-  </p>
-  <p>
-    <label for="description">Description</label>
-    <input type="text" id="description" name="description" value="{{ course.description }}">
-  </p>
-  <p>
-    <label for="provider">Provider</label>
-    <input type="text" id="provider" name="provider" value="{{ course.provider }}">
-  </p>
-  <input type="submit">
-</form>
+{% block form_title %}
+Edit Course
+{% endblock %}
+
+{% block action_url %}
+{{ url_for('edit_course', category_id=category.id, course_id=course.id) }}
+{% endblock %}
+
+{% block course_name %}
+{{ course.name }}
+{% endblock %}
+
+{% block course_level %}
+{{ course.level }}
+{% endblock %}
+
+{% block course_url %}
+{{ course.url }}
+{% endblock %}
+
+{% block course_image_url %}
+{{ course.image_url }}
+{% endblock %}
+
+{% block course_description %}
+{{ course.description }}
+{% endblock %}
+
+{% block course_provider %}
+{{ course.provider }}
+{% endblock %}
+
+{% block form_submit %}
+Update
 {% endblock %}

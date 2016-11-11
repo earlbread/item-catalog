@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-2"></div>
+
+    <div class="col-sm-8">
+
+      <h1>{% block form_title %}{% endblock %}</h1>
+
+      <form action="{% block action_url %}{% endblock %}" method="post">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" class="form-control"
+                 value="{% block course_name %}{% endblock %}">
+        </div>
+
+        <div class="form-group">
+          <label for="level">Level</label>
+          <input type="text" id="level" name="level" class="form-control"
+                 value="{% block course_level %}{% endblock %}">
+        </div>
+
+        <div class="form-group">
+          <label for="url">Url</label>
+          <input type="text" id="url" name="url" class="form-control"
+                 value="{% block course_url %}{% endblock %}">
+        </div>
+
+        <div class="form-group">
+          <label for="image_url">Image Url</label>
+          <input type="text" id="image_url" name="image_url" class="form-control"
+                 value="{% block course_image_url %}{% endblock %}">
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <input type="text" id="description" name="description" class="form-control"
+                 value="{% block course_description %}{% endblock %}">
+        </div>
+
+        <div class="form-group">
+          <label for="provider">Name</label>
+          <input type="text" id="provider" name="provider" class="form-control"
+                 value="{% block course_provider %}{% endblock %}">
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          {% block form_submit %}{% endblock %}
+        </button>
+        <a href={{ url_for('all_courses') }}>
+          Cancel
+        </a>
+      </form>
+      <!-- /form -->
+
+      <!-- /.col-md-12 -->
+    </div>
+
+    <div class="col-sm-2"></div>
+
+    <!-- /.row -->
+  </div>
+  <!-- /.container -->
+</div>
+{% endblock %}

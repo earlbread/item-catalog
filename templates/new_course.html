@@ -1,34 +1,13 @@
-{% extends 'base.html' %}
+{% extends 'course_form.html' %}
 
-{% block content %}
-<h1>New Course</h1>
-<form method="post" action="/category/{{ category.id }}/course/new">
-  <p>
-    <label for="name">Name</label>
-    <input type="text" id="name" name="name">
-  </p>
-  <p>
-    <label for="level">Level</label>
-    <input type="text" id="level" name="level">
-  </p>
-  <p>
-    <label for="url">Url</label>
-    <input type="text" id="url" name="url">
-  </p>
-  <p>
-    <label for="image_url">Image Url</label>
-    <input type="text" id="image_url" name="image_url">
-  </p>
-  <p>
-    <label for="description">Description</label>
-    <input type="text" id="description" name="description">
-  </p>
-  <p>
-    <label for="provider">Provider</label>
-    <input type="text" id="provider" name="provider">
-  </p>
-  <p>
-    <input type="submit">
-  </p>
-</form>
+{% block form_title %}
+New Course
+{% endblock %}
+
+{% block action_url %}
+{{ url_for('create_course', category_id=category.id) }}
+{% endblock %}
+
+{% block form_submit %}
+Create
 {% endblock %}

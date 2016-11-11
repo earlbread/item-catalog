@@ -80,6 +80,25 @@
       <!-- /.container -->
     </nav>
 
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <!-- Flash -->
+          {% with messages = get_flashed_messages() %}
+          {% if messages %}
+          <div class="alert alert-success" role="alert">
+            <ul>
+              {% for message in messages %}
+              <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+          {% endwith %}
+        </div>
+      </div>
+    </div>
+
     <!-- Page Content -->
     {% block content %}
     {% endblock %}

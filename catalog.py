@@ -5,6 +5,7 @@ from flask import redirect, url_for
 from flask import render_template
 from flask import request
 from flask import jsonify
+from flask import flash
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -21,6 +22,7 @@ session = DBSession()
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
+app.secret_key = 'test_secret_key'
 
 @app.route('/')
 @app.route('/category')
@@ -83,6 +85,8 @@ def create_category():
             new_category = Category(name=category_name)
             session.add(new_category)
             session.commit()
+
+            flash('New category is successfully created')
         return redirect(url_for('all_courses'))
     else:
         return render_template('new_category.html')
@@ -105,6 +109,7 @@ def edit_category(category_id):
             category.name = category_name
             session.add(category)
             session.commit()
+            flash('Category is successfully edited')
         return redirect(url_for('all_courses'))
     else:
         return render_template('edit_category.html',
@@ -128,6 +133,7 @@ def delete_category(category_id):
         category = session.query(Category).filter_by(id=category_id)
         category.delete()
         session.commit()
+        flash('Category is successfully deleted')
         return redirect(url_for('all_courses'))
     else:
         return render_template('delete_category.html', category=category)
@@ -175,6 +181,7 @@ def create_course(category_id):
                                 category_id=category_id)
             session.add(new_course)
             session.commit()
+            flash('New course is successfully created')
 
         return redirect(url_for('all_courses'))
     else:
@@ -217,10 +224,9 @@ def edit_course(category_id, course_id):
             if not course.provider:
                 course_provider = 'Unknown'
 
-            print 'provider = ', course.provider
-
             session.add(course)
             session.commit()
+            flash('Course is successfully edited')
 
         return redirect(url_for('all_courses'))
     else:
@@ -245,6 +251,7 @@ def delete_course(category_id, course_id):
         course = session.query(Course).filter_by(id=course_id)
         course.delete()
         session.commit()
+        flash('Course is successfully deleted')
         return redirect(url_for('all_courses'))
     else:
         return render_template('delete_course.html',

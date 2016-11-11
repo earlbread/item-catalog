@@ -1,8 +1,33 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Do you want delete to {{ category.name }}?</h1>
-<form method="post" action="/category/{{ category.id }}/delete">
-  <input type="submit">
-</form>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-2"></div>
+
+    <div class="col-sm-8">
+
+      <h1>Delete Category</h1>
+
+      <p>Do you really want to delete {{ category.name }} category?</p>
+      <p>Every course in this category will be deleted</p>
+      <form method="post" action="{{ url_for('delete_category', category_id=category.id) }}">
+        <button type="submit" class="btn btn-primary">
+          Delete
+        </button>
+        <a href={{ url_for('all_courses') }}>
+          Cancel
+        </a>
+      </form>
+      <!-- /form -->
+
+      <!-- /.col-md-12 -->
+    </div>
+
+    <div class="col-sm-2"></div>
+
+    <!-- /.row -->
+  </div>
+  <!-- /.container -->
+</div>
 {% endblock %}

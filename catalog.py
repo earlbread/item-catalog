@@ -24,6 +24,28 @@ app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.secret_key = 'test_secret_key'
 
+def get_category(category_id):
+    """Get category which has category_id and return it.
+
+    If the category_id doesn't exist, return None.
+    """
+    try:
+        category = session.query(Category).filter_by(id=category_id).one()
+        return category
+    except NoResultFound:
+        return None
+
+def get_course(course_id):
+    """Get course which has given id and return it.
+
+    If the course doesn't exist, return None.
+    """
+    try:
+        course = session.query(Course).filter_by(id=course_id).one()
+        return course
+    except NoResultFound:
+        return None
+
 @app.route('/')
 @app.route('/category')
 def index():
@@ -52,10 +74,9 @@ def all_courses_json():
 @app.route('/category/<int:category_id>/')
 def course_in_category(category_id):
     """Show courses in category"""
-    try:
-        current_category = session.query(Category).filter_by(
-            id=category_id).one()
-    except NoResultFound:
+    current_category = get_category(category_id)
+
+    if current_category is None:
         return redirect(url_for('all_courses'))
 
     categories = session.query(Category).all()
@@ -96,10 +117,9 @@ def create_category():
            methods=['GET', 'POST'])
 def edit_category(category_id):
     """Edit a category"""
-    try:
-        category = session.query(Category).filter_by(
-            id=category_id).one()
-    except NoResultFound:
+    category = get_category(category_id)
+
+    if category is None:
         return redirect(url_for('all_courses'))
 
     if request.method == 'POST':
@@ -120,10 +140,9 @@ def edit_category(category_id):
            methods=['GET', 'POST'])
 def delete_category(category_id):
     """Delete a category"""
-    try:
-        category = session.query(Category).filter_by(
-            id=category_id).one()
-    except NoResultFound:
+    category = get_category(category_id)
+
+    if category is None:
         return redirect(url_for('all_courses'))
 
     if request.method == 'POST':
@@ -143,15 +162,13 @@ def delete_category(category_id):
            methods=['GET', 'POST'])
 def create_course(category_id):
     """Create a new course"""
-    try:
-        category = session.query(Category).filter_by(
-            id=category_id).one()
-    except NoResultFound:
+    category = get_category(category_id)
+
+    if category is None:
         return redirect(url_for('all_courses'))
 
     if request.method == 'POST':
         course_name = request.form['name']
-        dummy_img_url = 'https://s3-us-west-1.amazonaws.com/udacity-content/degrees/catalog-images/Full-Stack.png'
 
         if course_name:
             course_level = request.form['level']
@@ -162,9 +179,6 @@ def create_course(category_id):
 
             if not course_level:
                 course_level = 'Unknown'
-
-            if not course_image_url:
-                course_image_url = dummy_img_url
 
             if not course_description:
                 course_description = 'Course about %s' % course_name
@@ -185,24 +199,20 @@ def create_course(category_id):
 
         return redirect(url_for('all_courses'))
     else:
-        return render_template('new_course.html',
-                               category=category)
+        return render_template('new_course.html', category=category)
 
 
 @app.route('/category/<int:category_id>/course/<int:course_id>/edit/',
            methods=['GET', 'POST'])
 def edit_course(category_id, course_id):
     """Edit a course"""
-    try:
-        category = session.query(Category).filter_by(id=category_id).one()
-        course = session.query(Course).filter_by(id=course_id).one()
-    except NoResultFound:
+    course = get_course(course_id)
+
+    if course is None:
         return redirect(url_for('all_courses'))
 
     if request.method == 'POST':
         course_name = request.form['name']
-        dummy_img_url = 'https://s3-us-west-1.amazonaws.com/udacity-content/degrees/catalog-images/Full-Stack.png'
-
 
         if course_name:
             course.name = course_name
@@ -213,16 +223,13 @@ def edit_course(category_id, course_id):
             course.provider = request.form['provider']
 
             if not course.level:
-                course_level = 'Unknown'
-
-            if not course.image_url:
-                course_image_url = dummy_img_url
+                course.level = 'Unknown'
 
             if not course.description:
-                course_description = 'Course about %s' % course_name
+                course.description = 'Course about %s' % course_name
 
             if not course.provider:
-                course_provider = 'Unknown'
+                course.provider = 'Unknown'
 
             session.add(course)
             session.commit()
@@ -231,7 +238,7 @@ def edit_course(category_id, course_id):
         return redirect(url_for('all_courses'))
     else:
         return render_template('edit_course.html',
-                               category=category,
+                               category=course.category,
                                course=course)
 
 
@@ -239,12 +246,9 @@ def edit_course(category_id, course_id):
            methods=['GET', 'POST'])
 def delete_course(category_id, course_id):
     """Delete a course"""
-    try:
-        course = session.query(Course).filter_by(
-            id=course_id).one()
-        category = session.query(Category).filter_by(
-            id=category_id).one()
-    except NoResultFound:
+    course = get_course(course_id)
+
+    if course is None:
         return redirect(url_for('all_courses'))
 
     if request.method == 'POST':
@@ -255,7 +259,6 @@ def delete_course(category_id, course_id):
         return redirect(url_for('all_courses'))
     else:
         return render_template('delete_course.html',
-                               category=category,
                                course=course)
 
 

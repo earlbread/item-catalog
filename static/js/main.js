@@ -12,3 +12,9 @@
     });
   });
 })();
+
+function imgError(image) {
+      image.onerror = "";
+      image.src = "/static/images/noimage.png";
+      return true;
+}

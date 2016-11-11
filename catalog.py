@@ -35,7 +35,6 @@ def all_courses():
     courses = session.query(Course).all()
 
     return render_template('course_list.html',
-                           current_category='All',
                            categories=categories,
                            courses=courses)
 
@@ -61,7 +60,7 @@ def course_in_category(category_id):
     courses = session.query(Course).filter_by(category_id=category_id).all()
 
     return render_template('course_list.html',
-                           current_category=current_category.name,
+                           current_category=current_category,
                            categories=categories,
                            courses=courses)
 
@@ -146,6 +145,7 @@ def create_course(category_id):
 
     if request.method == 'POST':
         course_name = request.form['name']
+        dummy_img_url = 'https://s3-us-west-1.amazonaws.com/udacity-content/degrees/catalog-images/Full-Stack.png'
 
         if course_name:
             course_level = request.form['level']
@@ -153,6 +153,18 @@ def create_course(category_id):
             course_image_url = request.form['image_url']
             course_description = request.form['description']
             course_provider = request.form['provider']
+
+            if not course_level:
+                course_level = 'Unknown'
+
+            if not course_image_url:
+                course_image_url = dummy_img_url
+
+            if not course_description:
+                course_description = 'Course about %s' % course_name
+
+            if not course_provider:
+                course_provider = 'Unknown'
 
             new_course = Course(name=course_name,
                                 level=course_level,
@@ -182,6 +194,8 @@ def edit_course(category_id, course_id):
 
     if request.method == 'POST':
         course_name = request.form['name']
+        dummy_img_url = 'https://s3-us-west-1.amazonaws.com/udacity-content/degrees/catalog-images/Full-Stack.png'
+
 
         if course_name:
             course.name = course_name
@@ -190,6 +204,20 @@ def edit_course(category_id, course_id):
             course.image_url = request.form['image_url']
             course.description = request.form['description']
             course.provider = request.form['provider']
+
+            if not course.level:
+                course_level = 'Unknown'
+
+            if not course.image_url:
+                course_image_url = dummy_img_url
+
+            if not course.description:
+                course_description = 'Course about %s' % course_name
+
+            if not course.provider:
+                course_provider = 'Unknown'
+
+            print 'provider = ', course.provider
 
             session.add(course)
             session.commit()

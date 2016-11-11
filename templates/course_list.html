@@ -1,51 +1,102 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container">
+
   <div class="row">
+
     <div class="col-sm-3">
+
       <div class="category">
-        <h1>Category</h1>
-        <p>
-          <a href="{{ url_for('create_category') }}">
-            New Category
-          </a>
-        </p>
+        <h4>Category</h4>
         {% for category in categories %}
-        <p>
+        <p class="form-control-static">
           <a href="{{ url_for('course_in_category', category_id=category.id) }}">
             {{ category.name }}
           </a>
-          <a href="{{ url_for('create_course', category_id=category.id) }}">
-            New Course
-          </a>
-          <a href="{{ url_for('edit_category', category_id=category.id) }}">
-            Edit
-          </a>
-          <a href="{{ url_for('delete_category', category_id=category.id) }}">
-            Delete
-          </a>
         </p>
         {% endfor %}
+        <p class="form-control-static">
+          <a href="{{ url_for('create_category') }}">
+            Add New Category
+          </a>
+        </p>
         <!-- /.category -->
       </div>
       <!-- /.col-sm-3 -->
     </div>
+
     <div class="col-sm-9">
+
       <div class="courses">
-        <h1>{{ current_category }} Courses</h1>
+
+        <div class="category-title">
+          {% if current_category %}
+          <h4 class="category-name">{{ current_category.name }}</h4>
+          <p class="category-control">
+            <a href="{{ url_for('edit_category', category_id=current_category.id) }}">
+              Edit
+            </a>
+            <a href="{{ url_for('delete_category', category_id=current_category.id) }}">
+              Delete
+            </a>
+          </p>
+          {% else %}
+          <h4>All Courses</h4>
+          {% endif %}
+          <!-- /.category-title -->
+        </div>
+
         {% for course in courses %}
+        <div class="course">
+          <div class="row">
+
+            <div class="col-sm-3">
+              <div class="row">
+                <div class="col-xs-12">
+                  <img class="img-responsive" src="{{ course.image_url }}" alt="{{ course.name }} Image">
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-9">
+              <div class="row">
+                <div class="col-xs-12">
+                  <h4 class="course-title">
+                  {{ course.name }}
+                  </h4>
+                  <a href="{{ url_for('edit_course', category_id=course.category.id,
+                    course_id=course.id) }}">
+                    Edit
+                  </a>
+                  <a href="{{ url_for('delete_course', category_id=course.category.id,
+                    course_id=course.id) }}">
+                    Delete
+                  </a>
+
+                  <p>
+                    Level - {{ course.level }}
+                  </p>
+                  <p>
+                    {{ course.description }}
+                  </p>
+                  <p>
+                    From {{ course.provider }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        {% endfor %}
+
+        {% if current_category %}
         <p>
-          {{ course.name }}
-          <a href="{{ url_for('edit_course', category_id=course.category.id,
-            course_id=course.id) }}">
-            Edit
-          </a>
-          <a href="{{ url_for('delete_course', category_id=course.category.id,
-            course_id=course.id) }}">
-            Delete
+          <a href="{{ url_for('create_course', category_id=current_category.id) }}">
+            Add New Course
           </a>
         </p>
-        {% endfor %}
+        {% endif %}
         <!-- /.courses -->
       </div>
       <!-- /.col-sm-9 -->

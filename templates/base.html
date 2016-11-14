@@ -9,6 +9,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    <!-- For Google Sign In -->
+    <meta name="google-signin-client_id" content="673070298147-3knilh2fbq8o2gebe3igi5hq6u30votp.apps.googleusercontent.com">
+
     <title>
       {% block title %}
       {% endblock %}
@@ -54,11 +57,11 @@
           <ul class="nav navbar-nav navbar-right">
             {% if user %}
             <li>
-              <a href="/blog/logout">Log out</a>
+              <a href="/logout">Log out</a>
             </li>
             {% else %}
             <li>
-              <a href="/blog/login">Login</a>
+              <a href="#" data-toggle="modal" data-target=".login-modal">Login</a>
             </li>
             {% endif %}
           </ul>
@@ -112,6 +115,23 @@
       </div>
     </footer>
 
+    <!-- Modal -->
+    <div class="modal fade login-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            Login with your account
+          </div>
+          <div class="modal-body">
+            <div class="g-signin2" data-onsuccess="onSignIn"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- jQuery -->
     <script src="/static/js/jquery.js"></script>
 
@@ -120,6 +140,9 @@
 
     <!-- Misc -->
     <script src="/static/js/main.js"></script>
+
+    <!-- Google Platform Library -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 
   </body>
 

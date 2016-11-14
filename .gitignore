@@ -93,3 +93,6 @@ ENV/
 
 # Database
 *.db
+
+# client_secrets.json
+client_secrets.json

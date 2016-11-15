@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <h1>Login</h1>
+
+      <div class="login">
+        Login with your account
+      </div>
+
+      <div class="g-signin2"
+           data-scope="https://www.googleapis.com/auth/plus.login"
+           data-redirecturi="postmessage"
+           data-accesstype="offline"
+           data-width="240"
+           data-height="50"
+           data-longtitle="true"
+           data-theme="dark"
+           data-onsuccess="onSignIn"
+           data-onfailure="onSignInFailure"
+           data-approvalprompt="force">
+      </div>
+
+      <!-- /.col-md-8 -->
+    </div>
+    <div class="col-md-2"></div>
+
+    <!-- /.row -->
+  </div>
+
+  <!-- /.container -->
+</div>
+
+{% endblock %}

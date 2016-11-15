@@ -55,9 +55,9 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right">
-            {% if user %}
+            {% if 'username' in session %}
             <li>
-              <a href="/logout">Log out</a>
+              <a href="#" onclick="logout();">Log out</a>
             </li>
             {% else %}
             <li>
@@ -123,7 +123,18 @@
             Login with your account
           </div>
           <div class="modal-body">
-            <div class="g-signin2" data-onsuccess="onSignIn"></div>
+            <div class="g-signin2"
+              data-scope="https://www.googleapis.com/auth/plus.login"
+              data-redirecturi="postmessage"
+              data-accesstype="offline"
+              data-width="240"
+              data-height="50"
+              data-longtitle="true"
+              data-theme="dark"
+              data-onsuccess="onSignIn"
+              data-onfailure="onSignInFailure"
+              data-approvalprompt="force">
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -143,6 +154,37 @@
 
     <!-- Google Platform Library -->
     <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <script>
+function logout() {
+  var auth2 = gapi.auth2.getAuthInstance();
+  auth2.signOut().then(function () {
+    window.location.href = "/logout";
+  });
+}
+
+function onSignIn(authResult) {
+  if (authResult['code']) {
+    $.ajax({
+      type: 'POST',
+      url: '/gconnect?state={{STATE}}',
+      processData: false,
+      data: authResult['code'],
+      contentType: 'application/octet-stream; charset=utf-8',
+      success: function(result) {
+        // Handle or verify the server response if necessary.
+        if (result) {
+          window.location.href = "/category/all";
+        } else if (authResult['error']) {
+          console.log('There was an error: ' + authResult['error']);
+        } else {
+          $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+        }
+      }
+    });
+  }
+}
+    </script>
 
   </body>
 

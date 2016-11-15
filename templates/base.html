@@ -13,8 +13,7 @@
     <meta name="google-signin-client_id" content="673070298147-3knilh2fbq8o2gebe3igi5hq6u30votp.apps.googleusercontent.com">
 
     <title>
-      {% block title %}
-      {% endblock %}
+      {% block title %}{% endblock %}
       Course Catalog
     </title>
 
@@ -39,109 +38,21 @@
 
   <body>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/category/all">Course Catalog</a>
-        </div>
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav navbar-right">
-            {% if 'username' in session %}
-            <li>
-              <a href="#" onclick="logout();">Log out</a>
-            </li>
-            {% else %}
-            <li>
-              <a href="#" data-toggle="modal" data-target=".login-modal">Login</a>
-            </li>
-            {% endif %}
-          </ul>
-        </div>
-        <!-- /.navbar-collapse -->
-      </div>
-      <!-- /.container -->
-    </nav>
+    <!-- Header -->
+    {% include 'header.html' %}
 
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <!-- Flash -->
-          {% with messages = get_flashed_messages() %}
-          {% if messages %}
-          <div class="alert alert-success" role="alert">
-            <ul>
-              {% for message in messages %}
-              <li>{{ message }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-          {% endif %}
-          {% endwith %}
-        </div>
-      </div>
-    </div>
+    <!-- Flash messages -->
+    {% include 'flash.html' %}
 
     <!-- Page Content -->
     {% block content %}
     {% endblock %}
 
     <!-- Footer -->
-    <footer>
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12">
-            <p>
-              Copyright © 2016 Seunghun Lee
-              <a href="https://github.com/earlbread/item-catalog">
-                <i class="fa fa-github" aria-hidden="true"></i>
-              </a>
-              <a href="https://linkedin.com/in/waydi1">
-                <i class="fa fa-linkedin" aria-hidden="true"></i>
-              </a>
-            </p>
-          </div>
-          <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
-      </div>
-    </footer>
+    {% include 'footer.html' %}
 
     <!-- Modal -->
-    <div class="modal fade login-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-      <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            Login with your account
-          </div>
-          <div class="modal-body">
-            <div class="g-signin2"
-              data-scope="https://www.googleapis.com/auth/plus.login"
-              data-redirecturi="postmessage"
-              data-accesstype="offline"
-              data-width="240"
-              data-height="50"
-              data-longtitle="true"
-              data-theme="dark"
-              data-onsuccess="onSignIn"
-              data-onfailure="onSignInFailure"
-              data-approvalprompt="force">
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    {% include 'login_modal.html' %}
 
     <!-- jQuery -->
     <script src="/static/js/jquery.js"></script>
@@ -149,41 +60,13 @@
     <!-- Bootstrap Core JavaScript -->
     <script src="/static/js/bootstrap.min.js"></script>
 
-    <!-- Misc -->
-    <script src="/static/js/main.js"></script>
-
     <!-- Google Platform Library -->
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 
+    <!-- Misc -->
+    <script src="/static/js/main.js"></script>
     <script>
-function logout() {
-  var auth2 = gapi.auth2.getAuthInstance();
-  auth2.signOut().then(function () {
-    window.location.href = "/logout";
-  });
-}
 
-function onSignIn(authResult) {
-  if (authResult['code']) {
-    $.ajax({
-      type: 'POST',
-      url: '/gconnect?state={{STATE}}',
-      processData: false,
-      data: authResult['code'],
-      contentType: 'application/octet-stream; charset=utf-8',
-      success: function(result) {
-        // Handle or verify the server response if necessary.
-        if (result) {
-          window.location.href = "/category/all";
-        } else if (authResult['error']) {
-          console.log('There was an error: ' + authResult['error']);
-        } else {
-          $('#result').html('Failed to make a server-side call. Check your configuration and console.');
-        }
-      }
-    });
-  }
-}
     </script>
 
   </body>

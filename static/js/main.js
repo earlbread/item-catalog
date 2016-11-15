@@ -1,20 +1,41 @@
 /* main.js */
 
-/* Add event listener for confirming when delete button is clicked */
-(function() {
-  var delete_buttons = document.querySelectorAll('.btn-delete');
-
-  delete_buttons.forEach(function(element) {
-    element.addEventListener('click', function(event) {
-      if (!confirm('Are you sure?')) {
-        event.preventDefault();
-      }
-    });
-  });
-})();
-
 function imgError(image) {
       image.onerror = "";
       image.src = "/static/images/noimage.png";
       return true;
+}
+
+function logout() {
+  var auth2 = gapi.auth2.getAuthInstance();
+  auth2.signOut().then(function () {
+    window.location.href = "/logout";
+  });
+}
+
+function googleSignIn(authResult) {
+  if (authResult['code']) {
+    $.ajax({
+      type: 'POST',
+      url: '/gconnect?state={{STATE}}',
+      processData: false,
+      data: authResult['code'],
+      contentType: 'application/octet-stream; charset=utf-8',
+      success: function(result) {
+        // Handle or verify the server response if necessary.
+        if (result) {
+          console.log('Successfully logged in');
+          window.location.href = "/category/all";
+        } else if (authResult['error']) {
+          console.log('There was an error: ' + authResult['error']);
+        } else {
+          console.log('Failed to make a server-side call. Check your configuration and console.');
+        }
+      }
+    });
+  }
+}
+
+function googleSignInFailure() {
+  console.log('Google Sign in is failed.');
 }

@@ -34,3 +34,8 @@ footer a {
 .course-title {
     display: inline;
 }
+
+/* Social Login */
+.social-login {
+    margin: 30px 0;
+}

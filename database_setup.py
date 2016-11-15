@@ -9,11 +9,22 @@ from sqlalchemy.orm import relationship
 Base = declarative_base()
 
 
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(30), nullable=False)
+    email = Column(String(250), unique=True, nullable=False)
+
+
 class Category(Base):
     __tablename__ = 'category'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(30), unique=True, nullable=False)
+
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user = relationship(User)
 
     @property
     def serialize(self):
@@ -38,6 +49,9 @@ class Course(Base):
     category_id = Column(Integer, ForeignKey('category.id'), nullable=False)
     category = relationship(Category)
 
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user = relationship(User)
+
     @property
     def serialize(self):
         return {
@@ -50,6 +64,7 @@ class Course(Base):
             'description': self.description,
             'provider': self.provider,
         }
+
 
 engine = create_engine('sqlite:///catalog.db')
 

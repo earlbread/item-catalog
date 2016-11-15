@@ -17,7 +17,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
-from database_setup import Base, Category, Course
+from database_setup import Base, Category, Course, User
 
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -47,6 +47,22 @@ def make_response_and_header(msg, status_code):
     response = make_response(json.dumps(msg), status_code)
     response.headers['Content-Type'] = 'application/json'
     return response
+
+
+def get_user_id(email):
+    try:
+        user = session.Query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
+
+
+def create_user(login_session):
+    user = User(name=login_session['name'],
+                email=login_session['email'])
+    session.add(user)
+    session.commit()
+    return user.id
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -111,6 +127,11 @@ def gconnect():
 
     login_session['username'] = data['name']
     login_session['email'] = data['email']
+    user_id = get_user_id(login_session['email'])
+
+    if user_id is None:
+        user_id = create_user(login_session)
+    login_session['user_id'] = user_id
 
     flash("You are now logged in as %s" % login_session['username'])
     msg = 'User is successfully logged in'

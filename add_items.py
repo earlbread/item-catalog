@@ -2,7 +2,7 @@
 """
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Category, Course
+from database_setup import Base, Category, Course, User
 
 engine = create_engine('sqlite:///catalog.db')
 
@@ -10,6 +10,12 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+user1 = User(name='Seunghun Lee',
+             email='waydi1@gmail.com')
+
+session.add(user1)
+session.commit()
 
 categories = [
     'Programming Language',
@@ -21,7 +27,7 @@ categories = [
 
 # Add Categories
 for category_name in categories:
-    new_category = Category(name=category_name)
+    new_category = Category(name=category_name, user_id=1)
     session.add(new_category)
     session.flush()
 
@@ -31,7 +37,8 @@ course = Course(name='Programming Foundations with Python',
                 image_url='https://s3-us-west-1.amazonaws.com/udacity-content/course/images/ud036-0619766.jpg',
                 description='Learn Object-Oriented Programming',
                 provider='Udacity',
-                category_id=1)
+                category_id=1,
+                user_id=1)
 session.add(course)
 
 course = Course(name='Linear Algebra Refresher Course',
@@ -40,7 +47,8 @@ course = Course(name='Linear Algebra Refresher Course',
                 image_url='https://s3-us-west-1.amazonaws.com/udacity-content/course/images/ud953-d95e68e.jpg',
                 description='A Brief Refresher (with Python!)',
                 provider='Udacity',
-                category_id=2)
+                category_id=2,
+                user_id=1)
 session.add(course)
 
 course = Course(name='Intro to Physics',
@@ -49,7 +57,8 @@ course = Course(name='Intro to Physics',
                 image_url='https://lh6.ggpht.com/9xDuLEr_4CuXcBZVbMQPagaUOvdUOH_T8V4I9Nm9XvDogvR4_yudI60v5_0tWedKx2LInYQiV6KOGqNPXuo=s0#w=436&h=268',
                 description='Landmarks in Physics',
                 provider='Udacity',
-                category_id=3)
+                category_id=3,
+                user_id=1)
 session.add(course)
 
 course = Course(name='Deep Learning',
@@ -58,7 +67,8 @@ course = Course(name='Deep Learning',
                 image_url='https://s3-us-west-1.amazonaws.com/udacity-content/course/images/ud730-b3af4bf.jpg',
                 description='Take machine learning to the next level',
                 provider='Udacity',
-                category_id=4)
+                category_id=4,
+                user_id=1)
 session.add(course)
 
 session.commit()

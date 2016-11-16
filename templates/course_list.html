@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <div class="container">
 
@@ -15,11 +16,13 @@
           </a>
         </p>
         {% endfor %}
+        {% if 'user_id' in session and session['user_id'] %}
         <p class="form-control-static">
           <a href="{{ url_for('create_category') }}">
             Add New Category
           </a>
         </p>
+        {% endif %}
         <!-- /.category -->
       </div>
       <!-- /.col-sm-3 -->
@@ -32,14 +35,16 @@
         <div class="category-title">
           {% if current_category %}
           <h4 class="category-name">{{ current_category.name }}</h4>
-          <p class="category-control">
-            <a href="{{ url_for('edit_category', category_id=current_category.id) }}">
-              Edit
-            </a>
-            <a href="{{ url_for('delete_category', category_id=current_category.id) }}">
-              Delete
-            </a>
-          </p>
+            {% if 'user_id' in session and session['user_id'] == current_category.user_id %}
+            <p class="category-control">
+              <a href="{{ url_for('edit_category', category_id=current_category.id) }}">
+                Edit
+              </a>
+              <a href="{{ url_for('delete_category', category_id=current_category.id) }}">
+                Delete
+              </a>
+            </p>
+            {% endif %}
           {% else %}
           <h4>All Courses</h4>
           {% endif %}
@@ -70,6 +75,7 @@
                     {{ course.name }}
                     {% endif %}
                   </h4>
+                  {% if 'user_id' in session and session['user_id'] == course.user_id %}
                   <a href="{{ url_for('edit_course', category_id=course.category.id,
                     course_id=course.id) }}">
                     Edit
@@ -78,6 +84,7 @@
                     course_id=course.id) }}">
                     Delete
                   </a>
+                  {% endif %}
 
                   <p>
                     Level - {{ course.level }}
@@ -97,11 +104,13 @@
         {% endfor %}
 
         {% if current_category %}
-        <p>
-          <a href="{{ url_for('create_course', category_id=current_category.id) }}">
-            Add New Course
-          </a>
-        </p>
+          {% if 'user_id' in session and session['user_id'] == current_category.user_id %}
+          <p>
+            <a href="{{ url_for('create_course', category_id=current_category.id) }}">
+              Add New Course
+            </a>
+          </p>
+          {% endif %}
         {% endif %}
         <!-- /.courses -->
       </div>

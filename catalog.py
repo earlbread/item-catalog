@@ -22,6 +22,8 @@ from database_setup import Base, Category, Course, User
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 
+from functools import wraps
+
 engine = create_engine('sqlite:///catalog.db')
 
 Base.metadata.bind = engine
@@ -51,18 +53,27 @@ def make_response_and_header(msg, status_code):
 
 def get_user_id(email):
     try:
-        user = session.Query(User).filter_by(email=email).one()
+        user = session.query(User).filter_by(email=email).one()
         return user.id
-    except:
+    except NoResultFound:
         return None
 
 
 def create_user(login_session):
-    user = User(name=login_session['name'],
+    user = User(name=login_session['username'],
                 email=login_session['email'])
     session.add(user)
     session.commit()
     return user.id
+
+
+def login_required(f):
+    @wraps(f)
+    def decoreated_function(*args, **kwargs):
+        if login_session.get('username') is None:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decoreated_function
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -247,16 +258,15 @@ def courses_in_category_json(category_id):
 
 
 @app.route('/category/new/', methods=['GET', 'POST'])
+@login_required
 def create_category():
     """Create a new category"""
-    if 'username' not in login_session:
-        return redirect(url_for('login'))
-
     if request.method == 'POST':
         category_name = request.form['name']
 
         if category_name:
-            new_category = Category(name=category_name)
+            new_category = Category(name=category_name,
+                                    user_id=login_session['user_id'])
             session.add(new_category)
             session.commit()
 
@@ -268,6 +278,7 @@ def create_category():
 
 @app.route('/category/<int:category_id>/edit/',
            methods=['GET', 'POST'])
+@login_required
 def edit_category(category_id):
     """Edit a category"""
     category = get_category(category_id)
@@ -291,6 +302,7 @@ def edit_category(category_id):
 
 @app.route('/category/<int:category_id>/delete/',
            methods=['GET', 'POST'])
+@login_required
 def delete_category(category_id):
     """Delete a category"""
     category = get_category(category_id)
@@ -313,6 +325,7 @@ def delete_category(category_id):
 
 @app.route('/category/<int:category_id>/course/new/',
            methods=['GET', 'POST'])
+@login_required
 def create_course(category_id):
     """Create a new course"""
     category = get_category(category_id)
@@ -345,7 +358,8 @@ def create_course(category_id):
                                 image_url=course_image_url,
                                 description=course_description,
                                 provider=course_provider,
-                                category_id=category_id)
+                                category_id=category_id,
+                                user_id=login_session['user_id'])
             session.add(new_course)
             session.commit()
             flash('New course is successfully created')
@@ -357,6 +371,7 @@ def create_course(category_id):
 
 @app.route('/category/<int:category_id>/course/<int:course_id>/edit/',
            methods=['GET', 'POST'])
+@login_required
 def edit_course(category_id, course_id):
     """Edit a course"""
     course = get_course(course_id)
@@ -397,6 +412,7 @@ def edit_course(category_id, course_id):
 
 @app.route('/category/<int:category_id>/course/<int:course_id>/delete/',
            methods=['GET', 'POST'])
+@login_required
 def delete_course(category_id, course_id):
     """Delete a course"""
     course = get_course(course_id)

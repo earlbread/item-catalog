@@ -16,6 +16,14 @@ class User(Base):
     name = Column(String(30), nullable=False)
     email = Column(String(250), unique=True, nullable=False)
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+        }
+
 
 class Category(Base):
     __tablename__ = 'category'
@@ -30,7 +38,8 @@ class Category(Base):
     def serialize(self):
         return {
             'id': self.id,
-            'name': self.name
+            'name': self.name,
+            'user': self.user.name,
         }
 
 
@@ -56,6 +65,7 @@ class Course(Base):
     def serialize(self):
         return {
             'category': self.category.name,
+            'user': self.user.name,
             'id': self.id,
             'name': self.name,
             'level': self.level,

@@ -6,6 +6,7 @@ import requests
 
 from flask import Flask, redirect, url_for, render_template, request, \
                   jsonify, flash, make_response, session as login_session
+from flaskext.csrf import csrf
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

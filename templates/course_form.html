@@ -10,6 +10,7 @@
       <h1>{% block form_title %}{% endblock %}</h1>
 
       <form action="{% block action_url %}{% endblock %}" method="post">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <div class="form-group">
           <label for="name">Name</label>
           <input type="text" id="name" name="name" class="form-control"

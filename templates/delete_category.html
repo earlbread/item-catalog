@@ -12,6 +12,7 @@
       <p>Do you really want to delete {{ category.name }} category?</p>
       <p>Every course in this category will be deleted</p>
       <form method="post" action="{{ url_for('delete_category', category_id=category.id) }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="btn btn-primary">
           Delete
         </button>

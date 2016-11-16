@@ -250,6 +250,10 @@ def courses_in_category_json(category_id):
     return jsonify(Course=[course.serialize for course in courses])
 
 
+def is_owner(user_id):
+    return user_id == login_session.get('user_id')
+
+
 @app.route('/category/new/', methods=['GET', 'POST'])
 @login_required
 def create_category():
@@ -276,6 +280,10 @@ def edit_category(category_id):
     """Edit a category"""
     category = get_category(category_id)
 
+    if not is_owner(category.user_id):
+        flash("You don't have permission.")
+        return redirect(url_for('all_courses'))
+
     if category is None:
         return redirect(url_for('all_courses'))
 
@@ -300,6 +308,10 @@ def delete_category(category_id):
     """Delete a category"""
     category = get_category(category_id)
 
+    if not is_owner(category.user_id):
+        flash("You don't have permission.")
+        return redirect(url_for('all_courses'))
+
     if category is None:
         return redirect(url_for('all_courses'))
 
@@ -322,6 +334,10 @@ def delete_category(category_id):
 def create_course(category_id):
     """Create a new course"""
     category = get_category(category_id)
+
+    if not is_owner(category.user_id):
+        flash("You don't have permission.")
+        return redirect(url_for('all_courses'))
 
     if category is None:
         return redirect(url_for('all_courses'))
@@ -369,6 +385,10 @@ def edit_course(category_id, course_id):
     """Edit a course"""
     course = get_course(course_id)
 
+    if not is_owner(course.user_id):
+        flash("You don't have permission.")
+        return redirect(url_for('all_courses'))
+
     if course is None:
         return redirect(url_for('all_courses'))
 
@@ -409,6 +429,10 @@ def edit_course(category_id, course_id):
 def delete_course(category_id, course_id):
     """Delete a course"""
     course = get_course(course_id)
+
+    if not is_owner(course.user_id):
+        flash("You don't have permission.")
+        return redirect(url_for('all_courses'))
 
     if course is None:
         return redirect(url_for('all_courses'))

@@ -14,10 +14,12 @@ function logout() {
 }
 
 function googleSignIn(authResult) {
+  var csrf_token = $('meta[name=csrf-token]').attr('content');
+
   if (authResult['code']) {
     $.ajax({
       type: 'POST',
-      url: '/gconnect?state={{STATE}}',
+      url: '/gconnect?_csrf_token=' + csrf_token,
       processData: false,
       data: authResult['code'],
       contentType: 'application/octet-stream; charset=utf-8',

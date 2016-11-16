@@ -6,7 +6,7 @@ import requests
 
 from flask import Flask, redirect, url_for, render_template, request, \
                   jsonify, flash, make_response, session as login_session
-from flaskext.csrf import csrf
+from flaskext.csrf import csrf, csrf_exempt
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -28,6 +28,8 @@ session = DBSession()
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.secret_key = 'test_secret_key'
+
+csrf(app)
 
 
 CLIENT_ID = json.loads(
@@ -71,8 +73,16 @@ def login_required(f):
     return decoreated_function
 
 
+@csrf_exempt
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    # There is no form data in AJAX, so use get parameter.
+    csrf_token = login_session.pop('_csrf_token', None)
+    if not csrf_token or csrf_token != request.args.get('_csrf_token'):
+        msg = 'CSRF validation failed'
+        status_code = 400
+        return make_response_and_header(msg, status_code)
+
     # Obtain authorization code
     code = request.data
 

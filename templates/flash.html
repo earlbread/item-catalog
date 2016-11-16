@@ -4,16 +4,14 @@
     <div class="col-md-12">
 
       <!-- Flash -->
-      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-      <div class="alert alert-success" role="alert">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }}" role="alert">
         <ul>
-          {% for message in messages %}
           <li>{{ message }}</li>
-          {% endfor %}
         </ul>
       </div>
-      {% endif %}
+      {% endfor %}
       {% endwith %}
 
       <!-- /.col-md-12 -->

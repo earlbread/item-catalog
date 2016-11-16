@@ -64,6 +64,7 @@ def login_required(f):
     @wraps(f)
     def decoreated_function(*args, **kwargs):
         if login_session.get('username') is None:
+            flash('You need to login.', 'danger')
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decoreated_function
@@ -137,7 +138,7 @@ def gconnect():
         user_id = create_user(login_session)
     login_session['user_id'] = user_id
 
-    flash("You are now logged in as %s" % login_session['username'])
+    flash("You are now logged in as %s" % login_session['username'], 'success')
     msg = 'User is successfully logged in'
     status_code = 200
     return make_response_and_header(msg, status_code)
@@ -156,7 +157,7 @@ def gdisconnect():
     result = h.request(url, 'GET')[0]
 
     login_session.clear()
-    flash('You are now logged out.')
+    flash('You are now logged out.', 'success')
 
     if result['status'] == '200':
         msg = 'Successfully disconnected.'
@@ -267,7 +268,7 @@ def create_category():
             session.add(new_category)
             session.commit()
 
-            flash('New category is successfully created')
+            flash('New category is successfully created', 'success')
         return redirect(url_for('all_courses'))
     else:
         return render_template('new_category.html')
@@ -281,7 +282,7 @@ def edit_category(category_id):
     category = get_category(category_id)
 
     if not is_owner(category.user_id):
-        flash("You don't have permission.")
+        flash("You don't have permission.", 'danger')
         return redirect(url_for('all_courses'))
 
     if category is None:
@@ -294,7 +295,7 @@ def edit_category(category_id):
             category.name = category_name
             session.add(category)
             session.commit()
-            flash('Category is successfully edited')
+            flash('Category is successfully edited', 'success')
         return redirect(url_for('all_courses'))
     else:
         return render_template('edit_category.html',
@@ -309,7 +310,7 @@ def delete_category(category_id):
     category = get_category(category_id)
 
     if not is_owner(category.user_id):
-        flash("You don't have permission.")
+        flash("You don't have permission.", 'danger')
         return redirect(url_for('all_courses'))
 
     if category is None:
@@ -322,7 +323,7 @@ def delete_category(category_id):
         category = session.query(Category).filter_by(id=category_id)
         category.delete()
         session.commit()
-        flash('Category is successfully deleted')
+        flash('Category is successfully deleted', 'success')
         return redirect(url_for('all_courses'))
     else:
         return render_template('delete_category.html', category=category)
@@ -336,7 +337,7 @@ def create_course(category_id):
     category = get_category(category_id)
 
     if not is_owner(category.user_id):
-        flash("You don't have permission.")
+        flash("You don't have permission.", 'danger')
         return redirect(url_for('all_courses'))
 
     if category is None:
@@ -371,7 +372,7 @@ def create_course(category_id):
                                 user_id=login_session['user_id'])
             session.add(new_course)
             session.commit()
-            flash('New course is successfully created')
+            flash('New course is successfully created', 'success')
 
         return redirect(url_for('all_courses'))
     else:
@@ -386,7 +387,7 @@ def edit_course(category_id, course_id):
     course = get_course(course_id)
 
     if not is_owner(course.user_id):
-        flash("You don't have permission.")
+        flash("You don't have permission.", 'danger')
         return redirect(url_for('all_courses'))
 
     if course is None:
@@ -414,7 +415,7 @@ def edit_course(category_id, course_id):
 
             session.add(course)
             session.commit()
-            flash('Course is successfully edited')
+            flash('Course is successfully edited', 'success')
 
         return redirect(url_for('all_courses'))
     else:
@@ -431,7 +432,7 @@ def delete_course(category_id, course_id):
     course = get_course(course_id)
 
     if not is_owner(course.user_id):
-        flash("You don't have permission.")
+        flash("You don't have permission.", 'danger')
         return redirect(url_for('all_courses'))
 
     if course is None:
@@ -441,7 +442,7 @@ def delete_course(category_id, course_id):
         course = session.query(Course).filter_by(id=course_id)
         course.delete()
         session.commit()
-        flash('Course is successfully deleted')
+        flash('Course is successfully deleted', 'success')
         return redirect(url_for('all_courses'))
     else:
         return render_template('delete_course.html',

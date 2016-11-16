@@ -4,14 +4,8 @@ import json
 import httplib2
 import requests
 
-from flask import Flask
-from flask import redirect, url_for
-from flask import render_template
-from flask import request
-from flask import jsonify
-from flask import flash
-from flask import make_response
-from flask import session as login_session
+from flask import Flask, redirect, url_for, render_template, request, \
+                  jsonify, flash, make_response, session as login_session
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -19,8 +13,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from database_setup import Base, Category, Course, User
 
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.client import FlowExchangeError
+from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 
 from functools import wraps
 

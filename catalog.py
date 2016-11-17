@@ -197,6 +197,7 @@ def gconnect():
 
     data = answer.json()
 
+    login_session['provider'] = 'google'
     login_session['username'] = data['name']
     login_session['email'] = data['email']
     user_id = get_user_id(login_session['email'])
@@ -223,9 +224,6 @@ def gdisconnect():
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
 
-    login_session.clear()
-    flash('You are now logged out.', 'success')
-
     if result['status'] == '200':
         msg = 'Successfully disconnected.'
         status_code = 200
@@ -236,9 +234,32 @@ def gdisconnect():
         return make_response_and_header(msg, status_code)
 
 
+def fbdisconnect():
+    facebook_id = login_session['facebook_id']
+    # The access token must me included to successfully logout.
+    access_token = login_session['access_token']
+    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (
+            facebook_id, access_token)
+    h = httplib2.Http()
+    h.request(url, 'DELETE')[1]
+    return "you have been logged out"
+
+
 @app.route('/logout')
 def disconnect():
-    gdisconnect()
+    provider = login_session.pop('provider', None)
+
+    if provider is None:
+        flash("You're not logged in.", 'danger')
+        return redirect(url_for('all_courses'))
+
+    if provider == 'google':
+        gdisconnect()
+    elif provider == 'facebook':
+        fbdisconnect()
+
+    flash('You are now logged out.', 'success')
+    login_session.clear()
 
     return redirect(url_for('all_courses'))
 

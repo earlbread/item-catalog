@@ -6,37 +6,37 @@ function imgError(image) {
       return true;
 }
 
-function logout() {
-  var auth2 = gapi.auth2.getAuthInstance();
-  auth2.signOut().then(function () {
-    window.location.href = "/logout";
+function sendTokenToServer(url, data) {
+  var csrf_token = $('meta[name=csrf-token]').attr('content');
+
+  $.ajax({
+    type: 'POST',
+    url: url + '?_csrf_token=' + csrf_token,
+    processData: false,
+    data: data,
+    contentType: 'application/octet-stream; charset=utf-8',
+  }).done( function(result) {
+    // Handle or verify the server response if necessary.
+    if (result) {
+      console.log('Successfully logged in');
+      window.location.href = "/category/all";
+    } else if (authResult['error']) {
+      console.log('There was an error: ' + authResult['error']);
+    } else {
+      console.log('Failed to make a server-side call. Check your configuration and console.');
+    }
+  }).fail( function(jqXHR, textStatus) {
+    console.log( "Request failed: " + textStatus );
+    window.location.href = "/login";
   });
 }
 
 function googleSignIn(authResult) {
-  var csrf_token = $('meta[name=csrf-token]').attr('content');
-
   if (authResult['code']) {
-    $.ajax({
-      type: 'POST',
-      url: '/gconnect?_csrf_token=' + csrf_token,
-      processData: false,
-      data: authResult['code'],
-      contentType: 'application/octet-stream; charset=utf-8',
-    }).done( function(result) {
-      // Handle or verify the server response if necessary.
-      if (result) {
-        console.log('Successfully logged in');
-        window.location.href = "/category/all";
-      } else if (authResult['error']) {
-        console.log('There was an error: ' + authResult['error']);
-      } else {
-        console.log('Failed to make a server-side call. Check your configuration and console.');
-      }
-    }).fail( function(jqXHR, textStatus) {
-      console.log( "Request failed: " + textStatus );
-      window.location.href = "/login";
-    });
+    url = '/gconnect';
+    data = authResult['code'];
+
+    sendTokenToServer(url, data);
   }
 }
 
@@ -62,32 +62,11 @@ window.fbAsyncInit = function() {
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-function sendTokenToServer() {
+function facebookSignIn() {
   var access_token = FB.getAuthResponse()['accessToken'];
-  var csrf_token = $('meta[name=csrf-token]').attr('content');
-  console.log(access_token)
-  console.log('Welcome!  Fetching your information.... ');
   FB.api('/me', function(response) {
-    console.log('Successful login for: ' + response.name);
-    $.ajax({
-      type: 'POST',
-      url: '/fbconnect?_csrf_token=' + csrf_token,
-      processData: false,
-      data: access_token,
-      contentType: 'application/octet-stream; charset=utf-8',
-    }).done( function(result) {
-      // Handle or verify the server response if necessary.
-      if (result) {
-        console.log('Successfully logged in');
-        window.location.href = "/category/all";
-      } else if (authResult['error']) {
-        console.log('There was an error: ' + authResult['error']);
-      } else {
-        console.log('Failed to make a server-side call. Check your configuration and console.');
-      }
-    }).fail( function(jqXHR, textStatus) {
-      console.log( "Request failed: " + textStatus );
-      window.location.href = "/login";
-    });
+    url = '/fbconnect';
+    data = access_token;
+    sendTokenToServer(url, data);
   });
 }

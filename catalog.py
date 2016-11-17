@@ -1,5 +1,6 @@
 """Server code for item-catalog app
 """
+import os
 import json
 import httplib2
 import requests
@@ -14,7 +15,8 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from database_setup import Base, Category, Course, User
 
-from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
+from oauth2client.client import flow_from_clientsecrets, FlowExchangeError, \
+                                OAuth2WebServerFlow
 
 from functools import wraps
 
@@ -30,10 +32,6 @@ app.url_map.strict_slashes = False
 app.secret_key = 'test_secret_key'
 
 csrf(app)
-
-
-CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
 
 
 @app.route('/login')
@@ -94,10 +92,15 @@ def fbconnect():
     access_token = request.data
     print "access token received %s " % access_token
 
-    app_id = json.loads(open('fb_client_secrets.json', 'r').read())[
-        'web']['app_id']
-    app_secret = json.loads(
-        open('fb_client_secrets.json', 'r').read())['web']['app_secret']
+    if os.path.isfile('fb_client_secrets.json'):
+        app_id = json.loads(open('fb_client_secrets.json', 'r').read())[
+                'web']['app_id']
+        app_secret = json.loads(open('fb_client_secrets.json', 'r').read())[
+                        'web']['app_secret']
+    else:
+        app_id = os.environ['FB_CLIENT_ID']
+        app_secret = os.environ['FB_CLIENT_SECRET']
+
     url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
         app_id, app_secret, access_token)
     h = httplib2.Http()
@@ -139,12 +142,27 @@ def fbconnect():
 @app.route('/gconnect', methods=['POST'])
 @csrf_login
 def gconnect():
+    if os.path.isfile('client_secrets.json'):
+        CLIENT_ID = json.loads(
+                open('client_secrets.json', 'r').read())['web']['client_id']
+    else:
+        CLIENT_ID = json.loads(os.environ['GOOGLE_CLIENT_SECRETS'])[
+                'web']['client_id']
+
     # Obtain authorization code
     code = request.data
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        if os.path.isfile('client_secrets.json'):
+            oauth_flow = flow_from_clientsecrets('client_secrets.json',
+                                                 scope='')
+        else:
+            oauth_flow = OAuth2WebServerFlow(
+                    client_id=os.environ['GOOGLE_CLIENT_ID'],
+                    client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
+                    scope='')
+
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:

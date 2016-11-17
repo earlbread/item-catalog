@@ -77,5 +77,4 @@ class Course(Base):
 
 engine = create_engine('sqlite:///catalog.db')
 
-Base.metadata.drop_all(engine)
-Base.metadata.create_all(engine)
+Base.metadata.create_all(engine, checkfirst=True)

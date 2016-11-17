@@ -92,14 +92,8 @@ def fbconnect():
     access_token = request.data
     print "access token received %s " % access_token
 
-    if os.path.isfile('fb_client_secrets.json'):
-        app_id = json.loads(open('fb_client_secrets.json', 'r').read())[
-                'web']['app_id']
-        app_secret = json.loads(open('fb_client_secrets.json', 'r').read())[
-                        'web']['app_secret']
-    else:
-        app_id = os.environ['FB_CLIENT_ID']
-        app_secret = os.environ['FB_CLIENT_SECRET']
+    app_id = os.environ['FB_CLIENT_ID']
+    app_secret = os.environ['FB_CLIENT_SECRET']
 
     url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
         app_id, app_secret, access_token)
@@ -142,26 +136,15 @@ def fbconnect():
 @app.route('/gconnect', methods=['POST'])
 @csrf_login
 def gconnect():
-    if os.path.isfile('client_secrets.json'):
-        CLIENT_ID = json.loads(
-                open('client_secrets.json', 'r').read())['web']['client_id']
-    else:
-        CLIENT_ID = json.loads(os.environ['GOOGLE_CLIENT_SECRETS'])[
-                'web']['client_id']
-
     # Obtain authorization code
     code = request.data
 
     try:
         # Upgrade the authorization code into a credentials object
-        if os.path.isfile('client_secrets.json'):
-            oauth_flow = flow_from_clientsecrets('client_secrets.json',
-                                                 scope='')
-        else:
-            oauth_flow = OAuth2WebServerFlow(
-                    client_id=os.environ['GOOGLE_CLIENT_ID'],
-                    client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
-                    scope='')
+        oauth_flow = OAuth2WebServerFlow(
+                client_id=os.environ['GOOGLE_CLIENT_ID'],
+                client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
+                scope='')
 
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
@@ -190,7 +173,7 @@ def gconnect():
         return make_response_and_header(msg, status_code)
 
     # Verify that the access token is valid for this app.
-    if result['issued_to'] != CLIENT_ID:
+    if result['issued_to'] != os.environ['GOOGLE_CLIENT_ID']:
         msg = "Token's client ID does not match app's."
         status_code = 401
         print "Token's client ID does not match app's."

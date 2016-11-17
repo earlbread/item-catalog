@@ -23,21 +23,71 @@ function googleSignIn(authResult) {
       processData: false,
       data: authResult['code'],
       contentType: 'application/octet-stream; charset=utf-8',
-      success: function(result) {
-        // Handle or verify the server response if necessary.
-        if (result) {
-          console.log('Successfully logged in');
-          window.location.href = "/category/all";
-        } else if (authResult['error']) {
-          console.log('There was an error: ' + authResult['error']);
-        } else {
-          console.log('Failed to make a server-side call. Check your configuration and console.');
-        }
+    }).done( function(result) {
+      // Handle or verify the server response if necessary.
+      if (result) {
+        console.log('Successfully logged in');
+        window.location.href = "/category/all";
+      } else if (authResult['error']) {
+        console.log('There was an error: ' + authResult['error']);
+      } else {
+        console.log('Failed to make a server-side call. Check your configuration and console.');
       }
+    }).fail( function(jqXHR, textStatus) {
+      console.log( "Request failed: " + textStatus );
+      window.location.href = "/login";
     });
   }
 }
 
 function googleSignInFailure() {
   console.log('Google Sign in is failed.');
+}
+
+/* Facebook SDK for JavaScript */
+window.fbAsyncInit = function() {
+  FB.init({
+    appId      : '154713091667161',
+    xfbml      : true,
+    version    : 'v2.6'
+  });
+};
+
+// Load the SDK asynchronously
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+
+function sendTokenToServer() {
+  var access_token = FB.getAuthResponse()['accessToken'];
+  var csrf_token = $('meta[name=csrf-token]').attr('content');
+  console.log(access_token)
+  console.log('Welcome!  Fetching your information.... ');
+  FB.api('/me', function(response) {
+    console.log('Successful login for: ' + response.name);
+    $.ajax({
+      type: 'POST',
+      url: '/fbconnect?_csrf_token=' + csrf_token,
+      processData: false,
+      data: access_token,
+      contentType: 'application/octet-stream; charset=utf-8',
+    }).done( function(result) {
+      // Handle or verify the server response if necessary.
+      if (result) {
+        console.log('Successfully logged in');
+        window.location.href = "/category/all";
+      } else if (authResult['error']) {
+        console.log('There was an error: ' + authResult['error']);
+      } else {
+        console.log('Failed to make a server-side call. Check your configuration and console.');
+      }
+    }).fail( function(jqXHR, textStatus) {
+      console.log( "Request failed: " + textStatus );
+      window.location.href = "/login";
+    });
+  });
 }

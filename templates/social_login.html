@@ -1,3 +1,4 @@
+<!-- Google Login -->
 <div class="g-signin2 social-login"
      data-scope="https://www.googleapis.com/auth/plus.login"
      data-redirecturi="postmessage"
@@ -10,3 +11,9 @@
      data-onfailure="googleSignInFailure"
      data-approvalprompt="force">
 </div>
+
+<!-- Facebook Login -->
+<fb:login-button
+  scope="public_profile,email"
+  onlogin="sendTokenToServer();">
+</fb:login-button>

@@ -10,7 +10,7 @@ class User(db.Model):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(250), unique=True, nullable=False)
 
     @property
@@ -26,7 +26,7 @@ class Category(db.Model):
     __tablename__ = 'category'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), unique=True, nullable=False)
+    name = db.Column(db.String(100), unique=True, nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship(User)
@@ -44,13 +44,13 @@ class Course(db.Model):
     __tablename__ = 'course'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
 
-    level = db.Column(db.String(20))  # Beginner, Intermediate, Advanced
+    level = db.Column(db.String(100))  # Beginner, Intermediate, Advanced
     url = db.Column(db.String(250))
     image_url = db.Column(db.String(250))
     description = db.Column(db.String(250))
-    provider = db.Column(db.String(30))
+    provider = db.Column(db.String(100))
 
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     category = db.relationship(Category)

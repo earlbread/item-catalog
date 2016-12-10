@@ -11,7 +11,11 @@ def createdb():
     db.create_all()
 
 @manager.command
-def init_db():
+def dropdb():
+    db.drop_all()
+
+@manager.command
+def initdb():
     from catalog.models import User, Category, Course
     user1 = User(name='Seunghun Lee',
                  email='waydi1@gmail.com')

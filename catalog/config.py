@@ -3,7 +3,7 @@ class Config(object):
     SECRET_KEY = 'test_secret_key'
 
 class ProdConfig(Config):
-    pass
+    SQLALCHEMY_DATABASE_URI = 'postgresql://catalog:catalog@localhost:5432/catalog'
 
 class DevConfig(Config):
     DEBUG = True

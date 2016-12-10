@@ -9,23 +9,10 @@ from flask import Flask, redirect, url_for, render_template, request, \
                   jsonify, flash, make_response, session as login_session
 from flaskext.csrf import csrf, csrf_exempt
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm.exc import NoResultFound
-
-from database_setup import Base, Category, Course, User
-
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError, \
                                 OAuth2WebServerFlow
 
 from functools import wraps
-
-engine = create_engine('sqlite:///catalog.db')
-
-Base.metadata.bind = engine
-
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -34,6 +21,8 @@ env = os.environ.get('CATALOG_ENV', 'prod')
 app.config.from_object('catalog.config.%sConfig' % env.capitalize())
 
 csrf(app)
+
+from models import *
 
 
 @app.route('/login')
@@ -49,7 +38,7 @@ def make_response_and_header(msg, status_code):
 
 def get_user_id(email):
     try:
-        user = session.query(User).filter_by(email=email).one()
+        user = db.session.query(User).filter_by(email=email).one()
         return user.id
     except NoResultFound:
         return None
@@ -58,8 +47,8 @@ def get_user_id(email):
 def create_user(login_session):
     user = User(name=login_session['username'],
                 email=login_session['email'])
-    session.add(user)
-    session.commit()
+    db.session.add(user)
+    db.session.commit()
     return user.id
 
 
@@ -273,7 +262,7 @@ def get_category(category_id):
     If the category_id doesn't exist, return None.
     """
     try:
-        category = session.query(Category).filter_by(id=category_id).one()
+        category = db.session.query(Category).filter_by(id=category_id).one()
         return category
     except NoResultFound:
         return None
@@ -285,7 +274,7 @@ def get_course(course_id):
     If the course doesn't exist, return None.
     """
     try:
-        course = session.query(Course).filter_by(id=course_id).one()
+        course = db.session.query(Course).filter_by(id=course_id).one()
         return course
     except NoResultFound:
         return None
@@ -301,8 +290,8 @@ def index():
 @app.route('/category/all/')
 def all_courses():
     """Show courses of all category"""
-    categories = session.query(Category).all()
-    courses = session.query(Course).all()
+    categories = db.session.query(Category).all()
+    courses = db.session.query(Course).all()
 
     return render_template('course_list.html',
                            categories=categories,
@@ -312,7 +301,7 @@ def all_courses():
 @app.route('/category/all/json/')
 def all_courses_json():
     """Show JSON for all courses"""
-    courses = session.query(Course).all()
+    courses = db.session.query(Course).all()
 
     return jsonify(Course=[course.serialize for course in courses])
 
@@ -325,8 +314,8 @@ def course_in_category(category_id):
     if current_category is None:
         return redirect(url_for('all_courses'))
 
-    categories = session.query(Category).all()
-    courses = session.query(Course).filter_by(category_id=category_id).all()
+    categories = db.session.query(Category).all()
+    courses = db.session.query(Course).filter_by(category_id=category_id).all()
 
     return render_template('course_list.html',
                            current_category=current_category,
@@ -337,7 +326,7 @@ def course_in_category(category_id):
 @app.route('/category/<int:category_id>/json/')
 def courses_in_category_json(category_id):
     """Show JSON for courses in category"""
-    courses = session.query(Course).filter_by(category_id=category_id).all()
+    courses = db.session.query(Course).filter_by(category_id=category_id).all()
 
     return jsonify(Course=[course.serialize for course in courses])
 
@@ -356,8 +345,8 @@ def create_category():
         if category_name:
             new_category = Category(name=category_name,
                                     user_id=login_session['user_id'])
-            session.add(new_category)
-            session.commit()
+            db.session.add(new_category)
+            db.session.commit()
 
             flash('New category is successfully created', 'success')
         return redirect(url_for('all_courses'))
@@ -384,8 +373,8 @@ def edit_category(category_id):
 
         if category_name:
             category.name = category_name
-            session.add(category)
-            session.commit()
+            db.session.add(category)
+            db.session.commit()
             flash('Category is successfully edited', 'success')
         return redirect(url_for('all_courses'))
     else:
@@ -408,12 +397,12 @@ def delete_category(category_id):
         return redirect(url_for('all_courses'))
 
     if request.method == 'POST':
-        courses_in_category = session.query(Course).filter_by(
+        courses_in_category = db.session.query(Course).filter_by(
             category_id=category.id)
         courses_in_category.delete()
-        category = session.query(Category).filter_by(id=category_id)
+        category = db.session.query(Category).filter_by(id=category_id)
         category.delete()
-        session.commit()
+        db.session.commit()
         flash('Category is successfully deleted', 'success')
         return redirect(url_for('all_courses'))
     else:
@@ -461,8 +450,8 @@ def create_course(category_id):
                                 provider=course_provider,
                                 category_id=category_id,
                                 user_id=login_session['user_id'])
-            session.add(new_course)
-            session.commit()
+            db.session.add(new_course)
+            db.session.commit()
             flash('New course is successfully created', 'success')
 
         return redirect(url_for('all_courses'))
@@ -504,8 +493,8 @@ def edit_course(category_id, course_id):
             if not course.provider:
                 course.provider = 'Unknown'
 
-            session.add(course)
-            session.commit()
+            db.session.add(course)
+            db.session.commit()
             flash('Course is successfully edited', 'success')
 
         return redirect(url_for('all_courses'))
@@ -530,9 +519,9 @@ def delete_course(category_id, course_id):
         return redirect(url_for('all_courses'))
 
     if request.method == 'POST':
-        course = session.query(Course).filter_by(id=course_id)
+        course = db.session.query(Course).filter_by(id=course_id)
         course.delete()
-        session.commit()
+        db.session.commit()
         flash('Course is successfully deleted', 'success')
         return redirect(url_for('all_courses'))
     else:
@@ -543,7 +532,7 @@ def delete_course(category_id, course_id):
 @app.route('/category/<int:category_id>/course/<int:course_id>/json/')
 def course_json(category_id, course_id):
     """Show JSON for specific course"""
-    course = session.query(Course).filter_by(id=course_id).one()
+    course = db.session.query(Course).filter_by(id=course_id).one()
 
     return jsonify(Course=course.serialize)
 

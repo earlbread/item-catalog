@@ -29,7 +29,9 @@ session = DBSession()
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
-app.secret_key = 'test_secret_key'
+
+env = os.environ.get('CATALOG_ENV', 'prod')
+app.config.from_object('catalog.config.%sConfig' % env.capitalize())
 
 csrf(app)
 

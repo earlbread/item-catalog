@@ -83,8 +83,8 @@ def fbconnect():
     access_token = request.data
     print "access token received %s " % access_token
 
-    app_id = os.environ['FB_CLIENT_ID']
-    app_secret = os.environ['FB_CLIENT_SECRET']
+    app_id = app.config['FB_CLIENT_ID']
+    app_secret = app.config['FB_CLIENT_SECRET']
 
     url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
         app_id, app_secret, access_token)
@@ -133,8 +133,8 @@ def gconnect():
     try:
         # Upgrade the authorization code into a credentials object
         oauth_flow = OAuth2WebServerFlow(
-                client_id=os.environ['GOOGLE_CLIENT_ID'],
-                client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
+                client_id=app.config['GOOGLE_CLIENT_ID'],
+                client_secret=app.config['GOOGLE_CLIENT_SECRET'],
                 scope='')
 
         oauth_flow.redirect_uri = 'postmessage'
@@ -164,7 +164,7 @@ def gconnect():
         return make_response_and_header(msg, status_code)
 
     # Verify that the access token is valid for this app.
-    if result['issued_to'] != os.environ['GOOGLE_CLIENT_ID']:
+    if result['issued_to'] != app.config['GOOGLE_CLIENT_ID']:
         msg = "Token's client ID does not match app's."
         status_code = 401
         print "Token's client ID does not match app's."

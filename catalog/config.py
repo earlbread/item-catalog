@@ -5,6 +5,11 @@ class Config(object):
 class ProdConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'postgresql://catalog:catalog@localhost:5432/catalog'
 
+    GOOGLE_CLIENT_ID='YOUR_GOOGLE_CLIENT_ID'
+    GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
+    FB_CLIENT_ID='YOUR_FACEBOOK_CLIENT_ID'
+    FB_CLIENT_SECRET='YOUR_FACEBOOK_CLIENT_SECRET'
+
 class DevConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///catalog.db'

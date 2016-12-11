@@ -13,17 +13,12 @@ Then make a virtual environment.
 
     $ git clone https://github.com/earlbread/item-catalog.git
     $ cd item-catalog
-    $ virtualenv ENV
-    $ source ENV/bin/activate
+    $ export CATALOG_ENV='dev'
+    $ ./setup
 
-After that, you need to install some requirements.
+Finally, you can use it.
 
-    $ pip install -r requirements.txt
-
-Finally, you can use it after finish database setup.
-
-    $ python database_setup.py
-    $ python catalog.py
+    $ ./manage.py runserver
 
 
 ## Social login
@@ -37,6 +32,21 @@ To use social login, you need to get client id from google and facebook and set 
 
 
 [1]: https://virtualenv.pypa.io/en/stable/installation/
+
+
+## Heroku deployment
+
+After push to heroku, you need to set up below.
+
+    $ heroku config:set CATALOG_ENV='heroku'
+    $ heroku ps:scale web=1
+    $ heroku run python manage.py createdb
+
+## AWS deployment
+
+For AWS deployment, you can refer [this][linux-server-configuration].
+
+[linux-server-configuration]: https://github.com/earlbread/linux-server-configuration
 
 ## Used skills
 

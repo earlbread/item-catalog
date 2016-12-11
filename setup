@@ -1,6 +1,10 @@
 #!/bin/bash
 
-virutalenv env
+virtualenv env
 source env/bin/activate
 
 pip install -r requirements.txt
+
+./manage.py dropdb
+./manage.py createdb
+./manage.py initdb

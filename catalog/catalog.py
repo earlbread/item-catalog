@@ -23,6 +23,7 @@ app.config.from_object('catalog.config.%sConfig' % env.capitalize())
 csrf(app)
 
 from models import *
+from sqlalchemy.orm.exc import NoResultFound
 
 
 @app.route('/login')
